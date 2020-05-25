@@ -8,6 +8,7 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
         obesityData = obesityApiData
         codesDataExists = obesityApiData.map(el => el.country_code)
         drawMap()
+        drawTimeSlider()
         selectYear("2016")
     })
 
@@ -37,6 +38,38 @@ function drawMap(){
         })
         .style("stroke", "white")
         .style("stroke-width", 1)
+}
+
+//adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+function drawTimeSlider(){
+    let lower = 1975, upper = 2016;
+    var dataTime = d3.range(0, (upper + 1) - lower).map(d => new Date(lower + d, 10, 3));
+
+    var sliderTime = d3
+        .sliderBottom()
+        .min(d3.min(dataTime))
+        .max(d3.max(dataTime))
+        .step(1000 * 60 * 60 * 24 * 365)
+        .width(300)
+        .tickFormat(d3.timeFormat('%Y'))
+        .tickValues(dataTime)
+        .default(new Date(lower, 10, 3))
+        .on('onchange', val => {
+            selectYear(d3.timeFormat('%Y')(val))
+            d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+        });
+
+    var gTime = d3
+        .select('div#slider-time')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)');
+
+    gTime.call(sliderTime);
+
+    d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 }
 
 function selectYear(year){
