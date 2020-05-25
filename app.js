@@ -9,7 +9,7 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
         codesDataExists = obesityApiData.map(el => el.country_code)
         drawMap()
         drawTimeSlider()
-        selectYear("2016")
+        selectYear(1975)
     })
 
 var color_no_data = "red"
@@ -43,9 +43,10 @@ function drawMap(){
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 function drawTimeSlider(){
     let lower = 1975, upper = 2016;
-    var dataTime = d3.range(0, (upper + 1) - lower).map(d => new Date(lower + d, 10, 3));
+    let dataTime = d3.range(0, (upper + 1) - lower)
+        .map(d => new Date(lower + d, 10, 3));
 
-    var sliderTime = d3
+    let sliderTime = d3
         .sliderBottom()
         .min(d3.min(dataTime))
         .max(d3.max(dataTime))
@@ -59,7 +60,7 @@ function drawTimeSlider(){
             d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
         });
 
-    var gTime = d3
+    let gTime = d3
         .select('div#slider-time')
         .append('svg')
         .attr('width', 500)
@@ -68,7 +69,6 @@ function drawTimeSlider(){
         .attr('transform', 'translate(30,30)');
 
     gTime.call(sliderTime);
-
     d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 }
 
