@@ -43,6 +43,7 @@ function drawMap(){
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 function drawTimeSlider(){
     let lower = 1975, upper = 2016;
+    let yearFormat = d3.timeFormat('%Y');
     let dataTime = d3.range(0, (upper + 1) - lower)
         .map(d => new Date(lower + d, 10, 3));
 
@@ -51,25 +52,22 @@ function drawTimeSlider(){
         .min(d3.min(dataTime))
         .max(d3.max(dataTime))
         .step(1000 * 60 * 60 * 24 * 365)
-        .width(300)
-        .tickFormat(d3.timeFormat('%Y'))
+        .width(750)
+        .tickFormat(yearFormat)
         .tickValues(dataTime)
         .default(new Date(lower, 10, 3))
         .on('onchange', val => {
-            selectYear(d3.timeFormat('%Y')(val))
-            d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+            selectYear(yearFormat(val))
         });
 
     let gTime = d3
         .select('div#slider-time')
         .append('svg')
-        .attr('width', 500)
+        .attr('width', 1000)
         .attr('height', 100)
         .append('g')
         .attr('transform', 'translate(30,30)');
-
     gTime.call(sliderTime);
-    d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 }
 
 function selectYear(year){
