@@ -1,0 +1,1 @@
+Generated using https://csvjson.com/csv2json from /data/wrangled/obesity-wrangled.csv
