@@ -12,8 +12,8 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
         selectYear(1975)
     })
 
-var color_no_data = "red"
-var color_country = "black"
+var color_no_data = "#444140"
+var color_country = "#DD6031"
 var mapHeight = 800;
 var svg;
 function drawMap(){
@@ -24,7 +24,6 @@ function drawMap(){
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .style("background", "beige");
 
     //the map
     let projection = d3.geoMercator().translate([width/2,height/2 + 125]);
@@ -39,7 +38,7 @@ function drawMap(){
         .style("fill", (d) => {
             return codesDataExists.includes(d.id) ? color_country : color_no_data;
         })
-        .style("stroke", "white")
+        .style("stroke", "black")
         .style("stroke-width", 0.5)
 
     //zoom effect
@@ -81,9 +80,9 @@ function selectYear(year){
             let perc = el.obesity_percentage
             let country = d3.select("#" + el.country_code + ".country")
             if(perc == "No data"){
-                country.style("fill", "red")
+                country.style("fill", color_no_data)
             } else {
-                country.style("fill-opacity", perc / 100)
+                country.style("fill-opacity", (perc + 10) / 100)
             }
         } 
     })
