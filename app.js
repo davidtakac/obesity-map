@@ -114,7 +114,7 @@ function countryUnselected(data){
     if(!availableCountries.includes(data.id)) return;
     hideTooltip()
     d3.select("#" + data.id + ".country")
-        .style("fill", colorCountry);
+        .style("fill", getColor(selectedYearData.find(el => el.country_code == data.id).obesity_percentage));
 }
 
 function showTooltip(d){
@@ -150,10 +150,14 @@ function selectYear(year){
                 country.style("fill", colorNoData)
             } else {
                 //todo: replace with color gradient
-                country.style("fill-opacity", (perc + 10) / 100)
+                country.style("fill", getColor(perc))
             }
         } 
     })
+}
+
+function getColor(obesityPercentage){
+    return d3.interpolateOrRd(obesityPercentage / 100)
 }
 
 function zoomed(){
