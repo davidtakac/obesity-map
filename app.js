@@ -1,4 +1,5 @@
-var worldData, obesityData, codesDataAvailable;
+var worldData, obesityData, codesDataExists;
+var tooltip;
 d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries-sans-antarctica.json")
     .then(countriesApiData => {
         worldData = countriesApiData;
@@ -6,14 +7,16 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
     })
     .then(obesityApiData => {
         obesityData = obesityApiData
-        codesDataExists = obesityApiData.map(el => el.country_code)
+        codesDataExists = obesityApiData.filter(el => el.obesity_percentage != "No data").map(el => el.country_code)
         drawMap()
         drawD3TimeSlider()
+        initTooltip()
         selectYear(1975)
     })
 
 var color_no_data = "#444140"
 var color_country = "#DD6031"
+var color_country_selected = "#5BC3EB"
 var mapHeight = 800;
 var svg;
 function drawMap(){
@@ -40,13 +43,15 @@ function drawMap(){
         })
         .style("stroke", "black")
         .style("stroke-width", 0.5)
+        .on('click', (d) => countrySelected(d))
+        .on('mouseout', (d) => countryUnselected(d));
 
-    //zoom effect
+    //zooming
     let zoom = d3.zoom()
         .scaleExtent([1,8])
         .on('zoom', zoomed);
-
-    svg.call(zoom);
+    //disables panning
+    svg.call(zoom).on("mousedown.zoom", null);
 }
 
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
@@ -60,7 +65,7 @@ function drawD3TimeSlider(){
         .tickFormat(d3.format(''))
         .ticks(upper - lower)
         .step(1)
-        .default(1975)
+        .default(lower)
         .on('onchange', year => selectYear(year))
 
     var gStep = d3.select('div#slider-step')
@@ -71,6 +76,46 @@ function drawD3TimeSlider(){
         .attr('transform', 'translate(30,30)');
 
     gStep.call(sliderStep);
+}
+
+function initTooltip(){
+    // Define the div for the tooltip
+    tooltip = d3.select("body").append("div")	
+        .attr("class", "tooltip")				
+        .style("opacity", 0);
+}
+
+function countrySelected(data){
+    if(!codesDataExists.includes(data.id)) return;
+    //get country data from data.id
+    showTooltip(data)
+    //get country and change fill color to color_country_selected
+
+    d3.select("#" + data.id + ".country")
+        .style("fill", color_country_selected);
+}
+
+function countryUnselected(data){
+    if(!codesDataExists.includes(data.id)) return;
+    //get country with data.id and change color to match selected year
+    hideTooltip()
+    d3.select("#" + data.id + ".country")
+        .style("fill", color_country);
+}
+
+function showTooltip(d){
+    tooltip.transition()	
+        .duration(200)		
+        .style("opacity", .9)
+    tooltip.html(d.id)
+        .style("left", (d3.event.pageX) + "px")		
+        .style("top", (d3.event.pageY) + "px");	
+}
+
+function hideTooltip(){
+    tooltip.transition()
+        .duration(200)
+        .style("opacity", 0);
 }
 
 function selectYear(year){

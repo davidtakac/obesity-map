@@ -1,3 +1,17 @@
 body {
     background-color: #EFE7DA;
 }
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 100px;					
+    height: 50px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: #1B264F;
+    color: white;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
