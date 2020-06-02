@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <!-- D3 -->
         <script src="http://d3js.org/d3.v5.min.js"></script>
         <script src="http://d3js.org/topojson.v3.min.js"></script>
         <script src="https://unpkg.com/d3-simple-slider"></script>
@@ -12,10 +17,15 @@
         />
     </head>
     <body>
-        <h2>Time</h2>
-        <div class="row align-items-center">
-            <div class="col-sm"><div id="slider-time"></div></div>
+        <div class="row w-100">
+            <div class="col-10">
+                <div id="map"></div>
+            </div>
+            <div class="col-2">
+                <p id="value-step"></p>
+                <div id="slider-step"></div>
+            </div>
         </div>
         <script src="app.js"></script>
-    </body>
+        </body>
 </html>

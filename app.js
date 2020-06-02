@@ -8,17 +8,20 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
         obesityData = obesityApiData
         codesDataExists = obesityApiData.map(el => el.country_code)
         drawMap()
-        drawTimeSlider()
+        drawD3TimeSlider()
         selectYear(1975)
     })
 
 var color_no_data = "red"
 var color_country = "black"
+var mapHeight = 800;
+var svg;
 function drawMap(){
     //svg container
-    let width = 1000;
-    let height = 700;
-    let svg = d3.select("body").append("svg")
+    let width = document.getElementById("map").clientWidth;
+    let height = mapHeight;
+    svg = d3.select("#map")
+        .append("svg")
         .attr("width", width)
         .attr("height", height)
         .style("background", "beige");
@@ -37,37 +40,38 @@ function drawMap(){
             return codesDataExists.includes(d.id) ? color_country : color_no_data;
         })
         .style("stroke", "white")
-        .style("stroke-width", 1)
+        .style("stroke-width", 0.5)
+
+    //zoom effect
+    let zoom = d3.zoom()
+        .scaleExtent([1,8])
+        .on('zoom', zoomed);
+
+    svg.call(zoom);
 }
 
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
-function drawTimeSlider(){
-    let lower = 1975, upper = 2016;
-    let yearFormat = d3.timeFormat('%Y');
-    let dataTime = d3.range(0, (upper + 1) - lower)
-        .map(d => new Date(lower + d, 10, 3));
+function drawD3TimeSlider(){
+    let lower = 1975, upper = 2016
+    let sliderHeight = 700;
+    var sliderStep = d3.sliderRight()
+        .min(lower)
+        .max(upper)
+        .height(sliderHeight)
+        .tickFormat(d3.format(''))
+        .ticks(upper - lower)
+        .step(1)
+        .default(1975)
+        .on('onchange', year => selectYear(year))
 
-    let sliderTime = d3
-        .sliderBottom()
-        .min(d3.min(dataTime))
-        .max(d3.max(dataTime))
-        .step(1000 * 60 * 60 * 24 * 365)
-        .width(750)
-        .tickFormat(yearFormat)
-        .tickValues(dataTime)
-        .default(new Date(lower, 10, 3))
-        .on('onchange', val => {
-            selectYear(yearFormat(val))
-        });
-
-    let gTime = d3
-        .select('div#slider-time')
+    var gStep = d3.select('div#slider-step')
         .append('svg')
-        .attr('width', 1000)
-        .attr('height', 100)
+        .attr('width', 100)
+        .attr('height', mapHeight)
         .append('g')
         .attr('transform', 'translate(30,30)');
-    gTime.call(sliderTime);
+
+    gStep.call(sliderStep);
 }
 
 function selectYear(year){
@@ -83,4 +87,10 @@ function selectYear(year){
             }
         } 
     })
+}
+
+function zoomed(){
+    svg
+        .selectAll('path')
+        .attr('transform', d3.event.transform);
 }
