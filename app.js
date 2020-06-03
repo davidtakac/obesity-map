@@ -4,7 +4,9 @@ var obesityData;
 var availableCountries;
 var selectedYearData;
 //views
-var tooltip, svg;
+var tooltip;
+var svg;
+var countries;
 //colors
 const colorNoData = "#9CAEA9";
 const colorCountry = "#DD6031";
@@ -44,25 +46,21 @@ function drawMap(){
         .append("svg")
         .attr("width", width)
         .attr("height", height)
+        .style("border", "black")
 
     //the map
     let projection = d3.geoMercator().translate([width/2,height/2 + 125]);
     let path = d3.geoPath().projection(projection);
-    svg.selectAll("path.country")
+    countries = svg.selectAll("path.country")
         .data(topojson.feature(worldData, worldData.objects.countries1).features)
         .enter()
         .append("path")
         .classed("country", true)
         .attr("d", path)
-        .attr("id", (d) => d.id)
-        .style("fill", (d) => {
-            const dataExists = availableCountries.includes(d.id);
-            return dataExists ? colorCountry : colorNoData;
-        })
         .style("stroke", colorStroke)
         .style("stroke-width", strokeWidth)
-        .on('mouseover', (d) => countrySelected(d))
-        .on('mouseout', (d) => countryUnselected(d));
+        .on('mouseover', function(d, i){ countrySelected(d, this) })
+        .on('mouseout', function(d, i){ countryUnselected(d, this) });
 
     //zooming
     let zoom = d3.zoom()
@@ -103,26 +101,24 @@ function initTooltip(){
     tooltip = d3.select("div.tooltip");
 }
 
-function countrySelected(data){
+function countrySelected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
     showTooltip(data)
-    d3.select("#" + data.id + ".country")
-        .style("fill", colorSelected);
+    d3.select(countryPath).style("fill", colorSelected);
 }
 
-function countryUnselected(data){
+function countryUnselected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
     hideTooltip()
-    d3.select("#" + data.id + ".country")
-        .style("fill", getColor(selectedYearData.find(el => el.country_code == data.id).obesity_percentage));
+    d3.select(countryPath).style("fill", getColor(getObesityPercentage(data.id)));
 }
 
 function showTooltip(d){
     //populate tooltip with selected country data
     data = selectedYearData.find((el) => el.country_code == d.id)
-    tooltip.select("#country").html(data.country)
-    tooltip.select("#obesity_perc").html(data.obesity_percentage + " %")
-    tooltip.select("#year").html(data.year)
+    tooltip.select("#country").text(data.country)
+    tooltip.select("#obesity_perc").text(data.obesity_percentage + " %")
+    tooltip.select("#year").text(data.year)
     //move tooltip to cursor
     tooltip
         .style("left", (d3.event.pageX) + "px")		
@@ -142,25 +138,29 @@ function hideTooltip(){
 
 function selectYear(year){
     selectedYearData = obesityData.filter(el => el.year == year);
-    selectedYearData.forEach(el => {
-        if(el.country_code.length == 3){
-            let perc = el.obesity_percentage
-            let country = d3.select("#" + el.country_code + ".country")
-            if(perc == "No data"){
-                country.style("fill", colorNoData)
-            } else {
-                //todo: replace with color gradient
-                country.style("fill", getColor(perc))
-            }
-        } 
-    })
+    countries.each(function(d, i) {
+            const perc = getObesityPercentage(d.id)
+            d3.select(this).style("fill", perc ? getColor(perc) : colorNoData);
+        });
 }
 
 function getColor(obesityPercentage){
     return d3.interpolateOrRd(obesityPercentage / 100)
 }
 
+/**
+ * Returns obesity percentage for country code in currently selected year or false
+ */
+function getObesityPercentage(countryCode){
+    const countryData = selectedYearData.find(el => el.country_code == countryCode)
+    if(countryData){
+        const perc = countryData.obesity_percentage
+        return isNaN(perc) ? false : perc;
+    } else {
+        return false;
+    }
+}
+
 function zoomed(){
-    svg.selectAll('path')
-        .attr('transform', d3.event.transform);
+    svg.selectAll('path').attr('transform', d3.event.transform);
 }
