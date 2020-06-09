@@ -16,6 +16,9 @@ var mapHeight = 800;
 var strokeWidth = 0.5;
 //defaults
 const defaultYear = 1997;
+//transition durations
+const durationSelected = 250;
+const durationUnselected = 150;
 
 //fetches data and then initializes page
 d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries-sans-antarctica.json")
@@ -42,6 +45,7 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
 function drawMap(){
     //svg container
     let width = document.getElementById("map").clientWidth;
+    mapHeight = width/2.1; //approx. Mercator aspect ratio without Antarctica
     let height = mapHeight;
     svg = d3.select("#map")
         .append("svg")
@@ -162,13 +166,19 @@ function initYearBanner(){
 function countrySelected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
     showTooltip(data)
-    d3.select(countryPath).style("fill", colorSelected);
+    d3.select(countryPath)
+        .transition()
+        .duration(durationSelected)
+        .style("fill", colorSelected);
 }
 
 function countryUnselected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
     hideTooltip()
-    d3.select(countryPath).style("fill", getColor(getObesityPercentage(data.id)));
+    d3.select(countryPath)
+        .transition()
+        .duration(durationUnselected)
+        .style("fill", getColor(getObesityPercentage(data.id)));
 }
 
 function showTooltip(d){
@@ -183,14 +193,14 @@ function showTooltip(d){
         .style("top", (d3.event.pageY) + "px");	
     //fade into view
     tooltip.transition()	
-        .duration(200)
+        .duration(durationSelected)
         .style("opacity", 1)
 }
 
 function hideTooltip(){
     //fade out
     tooltip.transition()
-        .duration(200)
+        .duration(durationUnselected)
         .style("opacity", 0);
 }
 
