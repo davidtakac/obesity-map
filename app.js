@@ -76,6 +76,13 @@ function drawMap(){
         .scaleExtent([1,8])
         .on('zoom', zoomed);
     svg.call(zoom)
+
+    //add border around map
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("stroke", "black")
 }
 
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
