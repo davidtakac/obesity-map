@@ -15,7 +15,7 @@ const colorStroke = "black";
 var mapHeight = 800;
 var strokeWidth = 0.5;
 //defaults
-const defaultYear = 2000;
+const defaultYear = 1997;
 
 //fetches data and then initializes page
 d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries-sans-antarctica.json")
@@ -68,8 +68,6 @@ function drawMap(){
         .scaleExtent([1,8])
         .on('zoom', zoomed);
     svg.call(zoom)
-        //disables panning
-        //.on("mousedown.zoom", null);
 }
 
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
@@ -102,12 +100,12 @@ function drawColorLegend(){
     const paddingVertical = 10;
     const barHeight = mapHeight - 75;
     const barWidth = 25;
-    const legendWidth = 3 * barWidth
-    const legendHeight = barHeight + 2 * paddingVertical
+    const legendWidth = 3 * barWidth //room for axis
+    const legendHeight = barHeight + 2 * paddingVertical //to not clip ticks
     const legendSvg = d3.select("#legend-container")
         .append("svg")
-        .attr("width", legendWidth) //leaves room for axis
-        .attr("height", legendHeight) //makes top and bottom ticks not clip
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
     
     //svg gradient must be defined in defs
     const defs = legendSvg.append("defs");
@@ -138,16 +136,16 @@ function drawColorLegend(){
         .style("fill", "url(#linear-gradient)")
         .style("stroke", "black");
 
-    //add axis
+    //create axis
     const scale = d3.scaleLinear()
         .domain([100,0])
         .range([0, barHeight]);
-
     const yAxis = d3.axisRight()
         .scale(scale)
         .ticks(15)
         .tickFormat((d) => d + "%");
 
+    //add axis and translate to right of legend
     legendSvg.append("g")
         .attr("transform", `translate(${barWidth}, ${paddingVertical})`)
         .call(yAxis)
@@ -176,9 +174,9 @@ function countryUnselected(data, countryPath){
 function showTooltip(d){
     //populate tooltip with selected country data
     data = selectedYearData.find((el) => el.country_code == d.id)
-    tooltip.select("#country").text(data.country)
-    tooltip.select("#obesity_perc").text(data.obesity_percentage + " %")
-    tooltip.select("#year").text(data.year)
+    tooltip.select("#tt-country").text(data.country)
+    tooltip.select("#tt-obesity_perc").text(data.obesity_percentage + " %")
+    tooltip.select("#tt-year").text(data.year)
     //move tooltip to cursor
     tooltip
         .style("left", (d3.event.pageX) + "px")		
@@ -202,7 +200,7 @@ function selectYear(year){
             const perc = getObesityPercentage(d.id)
             d3.select(this).style("fill", perc ? getColor(perc) : colorNoData);
         });
-    yearBanner.text(year)
+    yearBanner.text(`Year: ${year}`)
 }
 
 function getColor(obesityPercentage){

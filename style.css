@@ -24,6 +24,18 @@ div.tooltip {
     fill: #8FA6CB;
 }
 
-div#country {
+#tt-country {
     font-weight: bold;
+}
+
+.header {
+    font-family: 'Playfair Display', 'serif';
+}
+
+.header h1{
+    font-weight: 800
+}
+
+.header h2{
+    font-weight: 400;
 }
