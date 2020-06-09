@@ -51,7 +51,6 @@ function drawMap(){
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .style("border", "black")
 
     //the map
     let projection = d3.geoMercator().translate([width/2,height/2 + 125]);
