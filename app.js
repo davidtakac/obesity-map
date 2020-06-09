@@ -7,13 +7,14 @@ var selectedYearData;
 var tooltip;
 var svg;
 var countries;
+var yearBanner;
 //colors
 const colorNoData = "#9CAEA9";
 const colorSelected = "#8FA6CB";
 const colorStroke = "black";
 //dimensions
 var mapHeight = 800;
-var strokeWidth = 0.5;
+const strokeWidth = 0.5;
 //defaults
 const defaultYear = 1997;
 //transition durations
@@ -46,19 +47,19 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
 
 
 function drawMap(){
-    let aspectRatio = 2.1
+    const aspectRatio = 2.1
     //svg container
-    let width = document.getElementById("map").clientWidth;
+    const width = document.getElementById("map").clientWidth;
     mapHeight = width/aspectRatio; //approx. Mercator aspect ratio without Antarctica
-    let height = mapHeight;
+    const height = mapHeight;
     svg = d3.select("#map")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
 
     //the map
-    let projection = d3.geoMercator().translate([width/2,height/2 + 125]);
-    let path = d3.geoPath().projection(projection);
+    const projection = d3.geoMercator().translate([width/2,height/2 + 125]);
+    const path = d3.geoPath().projection(projection);
     countries = svg.selectAll("path.country")
         .data(topojson.feature(worldData, worldData.objects.countries1).features)
         .enter()
@@ -71,7 +72,7 @@ function drawMap(){
         .on('mouseout', function(d, i){ countryUnselected(d, this) });
 
     //zooming
-    let zoom = d3.zoom()
+    const zoom = d3.zoom()
         .scaleExtent([1,8])
         .on('zoom', zoomed);
     svg.call(zoom)
@@ -82,7 +83,7 @@ function drawD3TimeSlider(){
     const lower = 1975, upper = 2016
     const sliderWidth = 100;
     const sliderHeight = mapHeight - 100;
-    var sliderStep = d3.sliderRight()
+    const sliderStep = d3.sliderRight()
         .min(lower)
         .max(upper)
         .height(sliderHeight)
@@ -93,7 +94,7 @@ function drawD3TimeSlider(){
         .default(defaultYear)
         .on('onchange', year => selectYear(year))
 
-    var gStep = d3.select('div#slider-step')
+    const gStep = d3.select('div#slider-step')
         .append('svg')
         .attr('width', sliderWidth)
         .attr('height', mapHeight)
