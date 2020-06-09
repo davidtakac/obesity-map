@@ -13,25 +13,36 @@
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <div class="row">
-            <div class="col-10">
-                <div id="map"></div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col mt-4">
+                    <h1 class="text-center">World obesity</h1>
+                    <h2 class="text-center" id="year-banner"></h2>
+                </div>
             </div>
-            <div class="col-2">
-                <div id="slider-step"></div>
+            <div class="row">
+                <div class="col-2 mt-2">
+                    <div id="legend-container"></div>
+                </div>
+                <div class="col-8">
+                    <div id="map"></div>
+                </div>
+                <div class="col-2">
+                    <div id="slider-step"></div>
+                </div>
             </div>
         </div>
-        <div class="tooltip container">
+        <div class="tooltip container pb-2">
             <div class="row text-center">
-                <div class="col text-break" id="country"></div>
+                <div class="col text-break text-center" id="country"></div>
             </div>
             <div class="row">
-                <div class="col text-nowrap">Year</div>
-                <div class="col" id="year"></div>
+                <div class="col text-nowrap text-center">Year</div>
+                <div class="col text-center" id="year"></div>
             </div>
             <div class="row">
-                <div class="col text-nowrap">Obesity</div>
-                <div class="col" id="obesity_perc"></div>
+                <div class="col text-nowrap text-center">Obesity</div>
+                <div class="col text-center" id="obesity_perc"></div>
             </div>
         </div>
         <script src="app.js"></script>

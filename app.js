@@ -9,8 +9,7 @@ var svg;
 var countries;
 //colors
 const colorNoData = "#9CAEA9";
-const colorCountry = "#DD6031";
-const colorSelected = "#EE4266";
+const colorSelected = "#8FA6CB";
 const colorStroke = "black";
 //dimensions
 var mapHeight = 800;
@@ -33,7 +32,9 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
         //initialize page
         drawMap();
         drawD3TimeSlider();
+        drawColorLegend();
         initTooltip();
+        initYearBanner();
         selectYear(defaultYear);
     });
 
@@ -97,8 +98,48 @@ function drawD3TimeSlider(){
     gStep.call(sliderStep);
 }
 
+function drawColorLegend(){
+    const legendHeight = mapHeight - 75;
+    const legendWidth = 25;
+    const legend = d3.select("#legend-container")
+        .append("svg")
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
+    
+    const defs = legend.append("defs");
+    const linearGradient = defs
+        .append("linearGradient")
+        .attr("id", "linear-gradient");
+
+    //gradient direction bottom to top
+    linearGradient
+        .attr("x1", "0%")
+        .attr("y1", "100%")
+        .attr("x2", "0%")
+        .attr("y2", "0%");
+
+    //gradient steps
+    linearGradient.selectAll("stop")
+        .data(d3.range(0, 100))
+        .enter()
+        .append("stop")
+        .attr("offset", function(d) { return d + "%"; })
+        .attr("stop-color", function(d) { return getColor(d) });
+
+    //append a rectangle whose fill will be determined by created gradient
+    legend.append("rect")
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
+        .style("fill", "url(#linear-gradient)")
+        .style("stroke", "black");
+}
+
 function initTooltip(){
     tooltip = d3.select("div.tooltip");
+}
+
+function initYearBanner(){
+    yearBanner = d3.select("#year-banner");
 }
 
 function countrySelected(data, countryPath){
@@ -142,6 +183,7 @@ function selectYear(year){
             const perc = getObesityPercentage(d.id)
             d3.select(this).style("fill", perc ? getColor(perc) : colorNoData);
         });
+    yearBanner.text(year)
 }
 
 function getColor(obesityPercentage){
