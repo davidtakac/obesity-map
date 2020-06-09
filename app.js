@@ -192,6 +192,7 @@ function showTooltip(d){
     tooltip.select("#tt-year").text(data.year)
     //move tooltip to cursor
     tooltip
+        .style("display", "block")
         .style("left", (d3.event.pageX) + "px")		
         .style("top", (d3.event.pageY) + "px");	
     //fade into view

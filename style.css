@@ -3,6 +3,7 @@ body {
 }
 
 div.tooltip {	
+    display: none;
     position: absolute;				
     background: #1B264F;
     width: 150px;
