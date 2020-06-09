@@ -19,6 +19,9 @@ const defaultYear = 1997;
 //transition durations
 const durationSelected = 250;
 const durationUnselected = 150;
+//color scale for obesity
+const maxObesity = 50
+const colorScale = d3.scaleLinear().domain([0, maxObesity]).range([0, 1])
 
 //fetches data and then initializes page
 d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries-sans-antarctica.json")
@@ -43,9 +46,10 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
 
 
 function drawMap(){
+    let aspectRatio = 2.1
     //svg container
     let width = document.getElementById("map").clientWidth;
-    mapHeight = width/2.1; //approx. Mercator aspect ratio without Antarctica
+    mapHeight = width/aspectRatio; //approx. Mercator aspect ratio without Antarctica
     let height = mapHeight;
     svg = d3.select("#map")
         .append("svg")
@@ -129,7 +133,7 @@ function drawColorLegend(){
         .enter()
         .append("stop")
         .attr("offset", function(d) { return d + "%"; })
-        .attr("stop-color", function(d) { return getColor(d) });
+        .attr("stop-color", function(d) { return getColor(d / 100) });
 
     //append a rectangle whose fill will be determined by created gradient
     legendSvg.append("rect")
@@ -141,7 +145,7 @@ function drawColorLegend(){
 
     //create axis
     const scale = d3.scaleLinear()
-        .domain([100,0])
+        .domain([maxObesity,0])
         .range([0, barHeight]);
     const yAxis = d3.axisRight()
         .scale(scale)
@@ -177,7 +181,7 @@ function countryUnselected(data, countryPath){
     d3.select(countryPath)
         .transition()
         .duration(durationUnselected)
-        .style("fill", getColor(getObesityPercentage(data.id)));
+        .style("fill", getColorObesity(getObesityPercentage(data.id)));
 }
 
 function showTooltip(d){
@@ -207,13 +211,17 @@ function selectYear(year){
     selectedYearData = obesityData.filter(el => el.year == year);
     countries.each(function(d, i) {
             const perc = getObesityPercentage(d.id)
-            d3.select(this).style("fill", perc ? getColor(perc) : colorNoData);
+            d3.select(this).style("fill", perc ? getColorObesity(perc) : colorNoData);
         });
     yearBanner.text(`Year: ${year}`)
 }
 
-function getColor(obesityPercentage){
-    return d3.interpolateOrRd(obesityPercentage / 100)
+function getColor(num){
+    return d3.interpolateOrRd(num)
+}
+
+function getColorObesity(obesityPercentage){
+    return getColor(colorScale(obesityPercentage))
 }
 
 /**
