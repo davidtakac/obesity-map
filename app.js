@@ -99,14 +99,18 @@ function drawD3TimeSlider(){
 }
 
 function drawColorLegend(){
-    const legendHeight = mapHeight - 75;
-    const legendWidth = 25;
-    const legend = d3.select("#legend-container")
+    const paddingVertical = 10;
+    const barHeight = mapHeight - 75;
+    const barWidth = 25;
+    const legendWidth = 3 * barWidth
+    const legendHeight = barHeight + 2 * paddingVertical
+    const legendSvg = d3.select("#legend-container")
         .append("svg")
-        .attr("width", legendWidth)
-        .attr("height", legendHeight)
+        .attr("width", legendWidth) //leaves room for axis
+        .attr("height", legendHeight) //makes top and bottom ticks not clip
     
-    const defs = legend.append("defs");
+    //svg gradient must be defined in defs
+    const defs = legendSvg.append("defs");
     const linearGradient = defs
         .append("linearGradient")
         .attr("id", "linear-gradient");
@@ -127,11 +131,26 @@ function drawColorLegend(){
         .attr("stop-color", function(d) { return getColor(d) });
 
     //append a rectangle whose fill will be determined by created gradient
-    legend.append("rect")
-        .attr("width", legendWidth)
-        .attr("height", legendHeight)
+    legendSvg.append("rect")
+        .attr("width", barWidth)
+        .attr("height", barHeight)
+        .attr("transform", `translate(0, ${paddingVertical})`)
         .style("fill", "url(#linear-gradient)")
         .style("stroke", "black");
+
+    //add axis
+    const scale = d3.scaleLinear()
+        .domain([100,0])
+        .range([0, barHeight]);
+
+    const yAxis = d3.axisRight()
+        .scale(scale)
+        .ticks(15)
+        .tickFormat((d) => d + "%");
+
+    legendSvg.append("g")
+        .attr("transform", `translate(${barWidth}, ${paddingVertical})`)
+        .call(yAxis)
 }
 
 function initTooltip(){

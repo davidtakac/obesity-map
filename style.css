@@ -12,8 +12,12 @@ div.tooltip {
     border-radius: 5px;	
 }
 
-.tick text{
+#slider-step .tick text{
     fill: #9CAEA9;
+}
+
+#legend-container .tick text{
+    fill: black;
 }
 
 .parameter-value .handle {
