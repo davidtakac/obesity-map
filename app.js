@@ -16,7 +16,7 @@ const colorStroke = "black";
 var mapHeight = 800;
 const strokeWidth = 0.5;
 //defaults
-const defaultYear = 1997;
+const defaultYear = 1975;
 //transition durations
 const durationSelected = 250;
 const durationUnselected = 150;
@@ -85,7 +85,7 @@ function drawMap(){
         .on('zoom', zoomed);
     svg.call(zoom)
 
-    //add border around map
+    //border around map
     svg.append("rect")
         .attr("width", width)
         .attr("height", height)
