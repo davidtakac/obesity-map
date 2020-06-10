@@ -40,3 +40,19 @@ div.tooltip {
 .header h2{
     font-weight: 400;
 }
+
+.spinner-border {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 4rem;
+    height: 4rem;
+    border-width: 4px;
+}
+
+.content {
+    opacity: 0;
+}

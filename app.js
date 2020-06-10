@@ -20,6 +20,8 @@ const defaultYear = 1997;
 //transition durations
 const durationSelected = 250;
 const durationUnselected = 150;
+const durationHideLoader = 250;
+const durationShowContent = 500;
 //color scale for obesity
 const maxObesity = 50
 const colorScale = d3.scaleLinear().domain([0, maxObesity]).range([0, 1])
@@ -36,21 +38,27 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
             .filter(el => el.obesity_percentage != "No data")
             .map(el => el.country_code);
         
-        //initialize page
+        //initialize contents
         drawMap();
         drawD3TimeSlider();
         drawColorLegend();
         initTooltip();
         initYearBanner();
         selectYear(defaultYear);
-    });
+        return 1;
+    })
+    .then(() => {
+        //show page
+        hideLoader();
+        showContent();
+    })
 
 
 function drawMap(){
-    const aspectRatio = 2.1
+    const aspectRatio = 2.1 //approx. Mercator aspect ratio without Antarctica
     //svg container
     const width = document.getElementById("map").clientWidth;
-    mapHeight = width/aspectRatio; //approx. Mercator aspect ratio without Antarctica
+    mapHeight = width/aspectRatio;
     const height = mapHeight;
     svg = d3.select("#map")
         .append("svg")
@@ -196,7 +204,7 @@ function showTooltip(d){
     //populate tooltip with selected country data
     data = selectedYearData.find((el) => el.country_code == d.id)
     tooltip.select("#tt-country").text(data.country)
-    tooltip.select("#tt-obesity_perc").text(data.obesity_percentage + " %")
+    tooltip.select("#tt-obesity_perc").text(data.obesity_percentage + "%")
     tooltip.select("#tt-year").text(data.year)
     //move tooltip to cursor
     tooltip
@@ -248,4 +256,18 @@ function getObesityPercentage(countryCode){
 
 function zoomed(){
     svg.selectAll('path').attr('transform', d3.event.transform);
+}
+
+function showContent(){
+    d3.select(".content")
+        .transition()
+        .duration(durationShowContent)
+        .style("opacity", 1)
+}
+
+function hideLoader(){
+    d3.select(".spinner-border")
+        .transition()
+        .duration(durationHideLoader)
+        .style("opacity", 0)
 }
