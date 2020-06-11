@@ -1,3 +1,5 @@
+//url
+const topoJsonSansAntarcticaUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries-sans-antarctica.json"
 //data
 var worldData;
 var obesityData;
@@ -27,7 +29,7 @@ const maxObesity = 50
 const colorScale = d3.scaleLinear().domain([0, maxObesity]).range([0, 1])
 
 //fetches data and then initializes page
-d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries-sans-antarctica.json")
+d3.json(topoJsonSansAntarcticaUrl)
     .then(topojson => {
         worldData = topojson;
         return d3.json("data/json/obesity.json");
@@ -55,17 +57,19 @@ d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/world-cou
 
 
 function drawMap(){
-    const aspectRatio = 2.1 //approx. Mercator aspect ratio without Antarctica
-    //svg container
+    //approx. Mercator aspect ratio without Antarctica
+    const aspectRatio = 2.1
+    //calculate map container svg dimensions
     const width = document.getElementById("map").clientWidth;
     mapHeight = width/aspectRatio;
     const height = mapHeight;
+    //draw svg container
     svg = d3.select("#map")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
 
-    //the map
+    //draw the map
     const projection = d3.geoMercator().translate([width/2,height/2 + 125]);
     const path = d3.geoPath().projection(projection);
     countries = svg.selectAll("path.country")
@@ -134,10 +138,8 @@ function drawColorLegend(){
     const defs = legendSvg.append("defs");
     const linearGradient = defs
         .append("linearGradient")
-        .attr("id", "linear-gradient");
-
-    //gradient direction bottom to top
-    linearGradient
+        .attr("id", "linear-gradient")
+        //bottom to top gradient
         .attr("x1", "0%")
         .attr("y1", "100%")
         .attr("x2", "0%")
@@ -157,7 +159,7 @@ function drawColorLegend(){
         .attr("height", barHeight)
         .attr("transform", `translate(0, ${paddingVertical})`)
         .style("fill", "url(#linear-gradient)")
-        .style("stroke", "black");
+        .style("stroke", colorStroke);
 
     //create axis
     const scale = d3.scaleLinear()
