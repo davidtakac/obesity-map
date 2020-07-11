@@ -23,6 +23,7 @@ const colorBackground = "#EFE7DA";
 const colorNoData = "#9CAEA9";
 const colorSelected = "#8FA6CB";
 const colorStroke = "black";
+const colorTooltipBackground = "#1B264F"
 //dimensions
 var mapHeight = 800;
 const strokeWidth = 0.5;
@@ -200,11 +201,17 @@ const yScale = d3.scaleLinear()
     .range([0, barchartHeight])
 
 function initTooltipChart(){
-    barSvg = d3.select("#barchart-container")
+    const padding = {left: 35, bottom: 20, top: 5, right: 15}
+    //create barchart svg
+    const container = d3.select("#barchart-container")
         .append("svg")
+        .attr("width", barchartWidth + padding.left + padding.right)
+        .attr("height", barchartHeight + padding.bottom + padding.top)
+        .style("background-color", colorTooltipBackground);
+    barSvg = container.append("g")
         .attr("width", barchartWidth)
         .attr("height", barchartHeight)
-        .style("background-color", colorBackground);
+        .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
     barSvg.selectAll("rect")
         .data(d3.range(upper - lower))
         .enter()
@@ -214,32 +221,36 @@ function initTooltipChart(){
         .attr("width", barWidth)
         .attr("height", 0)
         .attr("stroke", colorStroke)
-    /*const xScale = d3.scaleBand()
-        .domain(d3.range(upper - lower))
-        .range(d3.range(lower, upper))
+    //y axis
+    const yScale = d3.scaleLinear()
+        .domain([maxObesity, 0])
+        .range([0, barchartHeight]);
+    const yAxis = d3.axisLeft()
+        .scale(yScale)
+        .ticks(5)
+        .tickFormat((d) => d + "%");
+    container.append("g")
+        .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
+        .call(yAxis)
+    //x axis
+    const xScale = d3.scaleBand()
+        .domain(d3.range((upper - lower) + 1))
+        .range([0, barchartWidth])
     const xAxis = d3.axisBottom()
         .scale(xScale)
-        .tickFormat((d, i) => {
-            if(d == upper || d == lower){
-                return d;
-            } else {
-                return "";
-            }
-        })
-    barSvg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
+        .tickFormat((d) => d + lower)
+        .tickValues(xScale.domain().filter((d, i) => {
+            return !(i % 10) //show every tenth tick
+        }))
+    container.append("g")
+        .attr("transform", "translate(" + padding.left + "," + (padding.top + barchartHeight) + ")")
         .call(xAxis)
-        .selectAll("text")
-        .style("text-anchor", "middle")*/
 }
 
 function updateTooltipChart(selectedCountryId){
-    console.log(selectedCountryId)
     selectedCountryData = obesityData
         .filter(el => el.country_code == selectedCountryId)
         .map(el => el.obesity_percentage)
-    console.log(selectedCountryData)
     barSvg.selectAll("rect")
         .data(selectedCountryData)
         .attr("y", (d) => barchartHeight - yScale(d))
