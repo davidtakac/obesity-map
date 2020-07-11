@@ -19,6 +19,7 @@ var yearBanner;
 var slider;
 var play;
 //colors
+const colorBackground = "#EFE7DA";
 const colorNoData = "#9CAEA9";
 const colorSelected = "#8FA6CB";
 const colorStroke = "black";
@@ -105,7 +106,7 @@ function drawMap(){
         .attr("width", width)
         .attr("height", height)
         .style("fill", "none")
-        .style("stroke", "black")
+        .style("stroke", colorStroke)
 }
 
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
@@ -191,33 +192,59 @@ function initTooltip(){
     initTooltipChart();
 }
 
+const barchartWidth = 200
+const barchartHeight = 100
+const barWidth = barchartWidth/(upper - lower)
+const yScale = d3.scaleLinear()
+    .domain([0, maxObesity])
+    .range([0, barchartHeight])
+
 function initTooltipChart(){
-    const width = 200;
-    const height = 100;
-    const bar_width = width/(upper - lower)
     barSvg = d3.select("#barchart-container")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .style("background-color", "blue");
+        .attr("width", barchartWidth)
+        .attr("height", barchartHeight)
+        .style("background-color", colorBackground);
     barSvg.selectAll("rect")
         .data(d3.range(upper - lower))
         .enter()
         .append("rect")
-        .attr("x", (d, i) => bar_width * i)
-        .attr("y", (d) => height - d)
-        .attr("width", bar_width)
-        .attr("height", (d) => d)
-        .attr("fill", "white")
+        .attr("x", (d, i) => barWidth * i)
+        .attr("y", 0)
+        .attr("width", barWidth)
+        .attr("height", 0)
+        .attr("stroke", colorStroke)
+    /*const xScale = d3.scaleBand()
+        .domain(d3.range(upper - lower))
+        .range(d3.range(lower, upper))
+    const xAxis = d3.axisBottom()
+        .scale(xScale)
+        .tickFormat((d, i) => {
+            if(d == upper || d == lower){
+                return d;
+            } else {
+                return "";
+            }
+        })
+    barSvg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "middle")*/
 }
 
 function updateTooltipChart(selectedCountryId){
+    console.log(selectedCountryId)
     selectedCountryData = obesityData
         .filter(el => el.country_code == selectedCountryId)
         .map(el => el.obesity_percentage)
+    console.log(selectedCountryData)
     barSvg.selectAll("rect")
         .data(selectedCountryData)
-        //todo: set x, y, height etc
+        .attr("y", (d) => barchartHeight - yScale(d))
+        .attr("height", (d) => yScale(d))
+        .attr("fill", (d) => getColorObesity(d))
 }
 
 function initYearBanner(){
@@ -248,7 +275,7 @@ function startPlaying(){
 
 function countrySelected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
-    updateTooltipChart(countryPath.id)
+    updateTooltipChart(data.id)
     showTooltip(data)
     d3.select(countryPath)
         .transition()
