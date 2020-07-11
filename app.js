@@ -5,11 +5,17 @@ var worldData;
 var obesityData;
 var availableCountries;
 var selectedYearData;
+//years
+var selectedYear;
+const lower = 1975;
+const upper = 2016;
 //views
 var tooltip;
 var svg;
 var countries;
 var yearBanner;
+var slider;
+var play;
 //colors
 const colorNoData = "#9CAEA9";
 const colorSelected = "#8FA6CB";
@@ -27,6 +33,8 @@ const durationShowContent = 500;
 //color scale for obesity
 const maxObesity = 50
 const colorScale = d3.scaleLinear().domain([0, maxObesity]).range([0, 1])
+//play interval
+var interval;
 
 //fetches data and then initializes page
 d3.json(topoJsonSansAntarcticaUrl)
@@ -46,6 +54,7 @@ d3.json(topoJsonSansAntarcticaUrl)
         drawColorLegend();
         initTooltip();
         initYearBanner();
+        initPlay();
         selectYear(defaultYear);
         return 1;
     })
@@ -61,7 +70,7 @@ function drawMap(){
     const aspectRatio = 2.1
     //calculate map container svg dimensions
     const width = document.getElementById("map").clientWidth;
-    mapHeight = width/aspectRatio;
+    mapHeight = width/aspectRatio - 30; //leaves room for button
     const height = mapHeight;
     //draw svg container
     svg = d3.select("#map")
@@ -99,10 +108,9 @@ function drawMap(){
 
 //adapted from https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
 function drawD3TimeSlider(){
-    const lower = 1975, upper = 2016
     const sliderWidth = 100;
     const sliderHeight = mapHeight - 100;
-    const sliderStep = d3.sliderRight()
+    slider = d3.sliderRight()
         .min(lower)
         .max(upper)
         .height(sliderHeight)
@@ -120,7 +128,7 @@ function drawD3TimeSlider(){
         .append('g')
         .attr('transform', 'translate(30,30)');
 
-    gStep.call(sliderStep);
+    gStep.call(slider);
 }
 
 function drawColorLegend(){
@@ -184,6 +192,28 @@ function initYearBanner(){
     yearBanner = d3.select("#year-banner");
 }
 
+function initPlay(){
+    play = d3.select("#play");
+    play.on("click", () => {
+        if(!play.classed("disabled")){
+            play.classed("disabled", true)
+            startPlaying()
+        }
+    })
+}
+
+function startPlaying(){
+    interval = setInterval(() => {
+        const newYear = selectedYear + 1
+        if(newYear > upper){
+            clearInterval(interval)
+            play.classed("disabled", false)
+        } else {
+            slider.value(selectedYear + 1)
+        }
+    }, 80)
+}
+
 function countrySelected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
     showTooltip(data)
@@ -227,6 +257,7 @@ function hideTooltip(){
 }
 
 function selectYear(year){
+    selectedYear = year;
     selectedYearData = obesityData.filter(el => el.year == year);
     countries.each(function(d, i) {
             const perc = getObesityPercentage(d.id)
