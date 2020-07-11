@@ -41,17 +41,22 @@
                 <button class="btn btn-primary mt-2" id="play">Play</button>
             </div>
         </div>
-        <div class="tooltip container pb-2">
-            <div class="row text-center">
-                <div class="col text-break text-center" id="tt-country"></div>
+        <div class="tooltip pb-2 row">
+            <div class="col">
+                <div class="row text-center">
+                    <div class="col text-break text-center" id="tt-country"></div>
+                </div>
+                <div class="row">
+                    <div class="col text-nowrap text-center">Year</div>
+                    <div class="col text-center" id="tt-year"></div>
+                </div>
+                <div class="row">
+                    <div class="col text-nowrap text-center">Obesity</div>
+                    <div class="col text-center" id="tt-obesity_perc"></div>
+                </div>
             </div>
-            <div class="row">
-                <div class="col text-nowrap text-center">Year</div>
-                <div class="col text-center" id="tt-year"></div>
-            </div>
-            <div class="row">
-                <div class="col text-nowrap text-center">Obesity</div>
-                <div class="col text-center" id="tt-obesity_perc"></div>
+            <div class="col" id="barchart-container">
+
             </div>
         </div>
         <script src="app.js"></script>

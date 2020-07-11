@@ -5,6 +5,7 @@ var worldData;
 var obesityData;
 var availableCountries;
 var selectedYearData;
+var selectedCountryData;
 //years
 var selectedYear;
 const lower = 1975;
@@ -12,6 +13,7 @@ const upper = 2016;
 //views
 var tooltip;
 var svg;
+var barSvg;
 var countries;
 var yearBanner;
 var slider;
@@ -186,6 +188,36 @@ function drawColorLegend(){
 
 function initTooltip(){
     tooltip = d3.select("div.tooltip");
+    initTooltipChart();
+}
+
+function initTooltipChart(){
+    const width = 200;
+    const height = 100;
+    const bar_width = width/(upper - lower)
+    barSvg = d3.select("#barchart-container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background-color", "blue");
+    barSvg.selectAll("rect")
+        .data(d3.range(upper - lower))
+        .enter()
+        .append("rect")
+        .attr("x", (d, i) => bar_width * i)
+        .attr("y", (d) => height - d)
+        .attr("width", bar_width)
+        .attr("height", (d) => d)
+        .attr("fill", "white")
+}
+
+function updateTooltipChart(selectedCountryId){
+    selectedCountryData = obesityData
+        .filter(el => el.country_code == selectedCountryId)
+        .map(el => el.obesity_percentage)
+    barSvg.selectAll("rect")
+        .data(selectedCountryData)
+        //todo: set x, y, height etc
 }
 
 function initYearBanner(){
@@ -216,6 +248,7 @@ function startPlaying(){
 
 function countrySelected(data, countryPath){
     if(!availableCountries.includes(data.id)) return;
+    updateTooltipChart(countryPath.id)
     showTooltip(data)
     d3.select(countryPath)
         .transition()
