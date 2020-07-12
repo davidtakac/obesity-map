@@ -322,7 +322,7 @@ function showTooltip(d){
     //fade into view
     tooltip.transition()	
         .duration(durationSelected)
-        .style("opacity", 1)
+        .style("opacity", 0.93)
 }
 
 function hideTooltip(){
