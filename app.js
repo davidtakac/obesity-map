@@ -39,6 +39,11 @@ const maxObesity = 50
 const colorScale = d3.scaleLinear().domain([0, maxObesity]).range([0, 1])
 //play interval
 var interval;
+//tooltip
+const barchartHeight = 100
+const yScale = d3.scaleLinear()
+    .domain([0, maxObesity])
+    .range([0, barchartHeight])
 
 //fetches data and then initializes page
 d3.json(topoJsonSansAntarcticaUrl)
@@ -118,8 +123,7 @@ function drawD3TimeSlider(){
         .min(lower)
         .max(upper)
         .height(sliderHeight)
-        //outputs years as 1975 instead of 1,975
-        .tickFormat(d3.format(''))
+        .tickFormat(d3.format('')) //outputs years as 1975 instead of 1,975
         .ticks(upper - lower)
         .step(1)
         .default(defaultYear)
@@ -193,14 +197,9 @@ function initTooltip(){
     initTooltipChart();
 }
 
-const barchartWidth = 200
-const barchartHeight = 100
-const barWidth = barchartWidth/(upper - lower)
-const yScale = d3.scaleLinear()
-    .domain([0, maxObesity])
-    .range([0, barchartHeight])
-
 function initTooltipChart(){
+    const barchartWidth = 200
+    const barWidth = barchartWidth/(upper - lower)
     const padding = {left: 35, bottom: 20, top: 5, right: 10}
     //create barchart svg
     const container = d3.select("#barchart-container")
