@@ -56,3 +56,16 @@ div.tooltip {
 .content {
     opacity: 0;
 }
+
+#play {
+    width: 200px;
+    color: black;
+    background-color: #EFE7DA;
+    border-color: black;
+    font-family: 'Playfair Display', 'serif';
+    font-weight: 800
+}
+
+.material-icons {
+    font-size: 34px;
+}

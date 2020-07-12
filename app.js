@@ -74,7 +74,7 @@ function drawMap(){
     const aspectRatio = 2.1
     //calculate map container svg dimensions
     const width = document.getElementById("map").clientWidth;
-    mapHeight = width/aspectRatio - 30; //leaves room for button
+    mapHeight = width/aspectRatio - 40; //leaves room for button
     const height = mapHeight;
     //draw svg container
     svg = d3.select("#map")
@@ -274,13 +274,17 @@ function initPlay(){
 }
 
 function startPlaying(){
+    var increment = +1;
+    if(selectedYear == upper){
+        increment = -1;
+    }
     interval = setInterval(() => {
-        const newYear = selectedYear + 1
-        if(newYear > upper){
+        const newYear = selectedYear + increment
+        if(newYear > upper || newYear < lower){
             clearInterval(interval)
             play.classed("disabled", false)
         } else {
-            slider.value(selectedYear + 1)
+            slider.value(selectedYear + increment)
         }
     }, 80)
 }
