@@ -201,7 +201,7 @@ const yScale = d3.scaleLinear()
     .range([0, barchartHeight])
 
 function initTooltipChart(){
-    const padding = {left: 35, bottom: 20, top: 5, right: 15}
+    const padding = {left: 35, bottom: 20, top: 5, right: 10}
     //create barchart svg
     const container = d3.select("#barchart-container")
         .append("svg")
@@ -240,7 +240,8 @@ function initTooltipChart(){
         .scale(xScale)
         .tickFormat((d) => d + lower)
         .tickValues(xScale.domain().filter((d, i) => {
-            return !(i % 10) //show every tenth tick
+            const year = d + lower
+            return year == lower || year == 1985 || year == 1996  || year == 2005 || year == upper
         }))
     container.append("g")
         .attr("transform", "translate(" + padding.left + "," + (padding.top + barchartHeight) + ")")

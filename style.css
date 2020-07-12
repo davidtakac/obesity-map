@@ -6,6 +6,7 @@ div.tooltip {
     display: none;
     position: absolute;				
     background: #1B264F;
+    width: 300px;
     color: white;			
     pointer-events: none;
     opacity: 0;
